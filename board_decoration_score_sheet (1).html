@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>班際壁報設計比賽評分系統 | Delia Memorial School</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Google Fonts (Inter & Noto Sans TC) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Noto Sans TC"', 'Inter', 'sans-serif'],
+            tech: ['Inter', 'sans-serif']
+          },
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+              800: '#075985',
+              900: '#0c4a6e'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #f8fafc;
+      color: #1e293b;
+      font-family: 'Noto Sans TC', sans-serif;
+    }
+    
+    .light-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    }
+
+    .light-card-hover {
+      transition: all 0.2s ease-in-out;
+    }
+    .light-card-hover:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    .accent-gradient-text {
+      background: linear-gradient(135deg, #0284c7 0%, #4f46e5 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .gold-gradient {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+    .silver-gradient {
+      background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+    }
+    .bronze-gradient {
+      background: linear-gradient(135deg, #b45309 0%, #78350f 100%);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between antialiased">
+
+  <!-- Top Navigation Header -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        
+        <!-- Brand & School Info -->
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl bg-sky-600 flex items-center justify-center text-white font-black text-xl shadow-md shadow-sky-200">
+            <i class="fa-solid fa-robot"></i>
+          </div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <span class="text-[11px] font-bold tracking-wider uppercase text-sky-700 bg-sky-50 px-2 py-0.5 rounded border border-sky-100">
+                地利亞修女紀念學校（協和二中）
+              </span>
+              <span class="text-[11px] text-slate-500 font-tech">2025-2026 / 2026-2027</span>
+            </div>
+            <h1 class="text-lg font-black text-slate-800 tracking-tight flex items-center gap-2">
+              <span data-zh="班際壁報設計比賽評分系統" data-en="Inter-class Board Decoration Score Sheet">班際壁報設計比賽評分系統</span>
+              <span class="text-xs font-normal text-slate-500 hidden sm:inline" data-zh="| 主題：AI與未來世界" data-en="| Theme: AI & Future World">| 主題：AI與未來世界</span>
+            </h1>
+          </div>
+        </div>
+
+        <!-- Right Side Control Panel -->
+        <div class="flex flex-wrap items-center gap-2">
+          
+          <!-- Language Switcher -->
+          <div class="flex items-center bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs font-medium">
+            <i class="fa-solid fa-globe text-sky-600 ml-1.5 mr-1"></i>
+            <button onclick="setLanguage('bilingual')" id="langBtnBilingual" class="px-2 py-1 rounded bg-white text-sky-700 font-bold shadow-xs">中英</button>
+            <button onclick="setLanguage('zh')" id="langBtnZh" class="px-2 py-1 rounded text-slate-600 hover:text-sky-600">中文</button>
+            <button onclick="setLanguage('en')" id="langBtnEn" class="px-2 py-1 rounded text-slate-600 hover:text-sky-600">EN</button>
+          </div>
+
+          <!-- Judge Selector Field -->
+          <div class="flex items-center bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 focus-within:ring-2 focus-within:ring-sky-500 focus-within:bg-white transition-all">
+            <i class="fa-solid fa-user-tie text-sky-600 mr-2 text-sm"></i>
+            <span class="text-xs text-slate-500 mr-1 font-medium hidden sm:inline" data-zh="評審姓名:" data-en="Judge:">評審姓名:</span>
+            <input 
+              type="text" 
+              id="judgeNameInput" 
+              value="評審 A" 
+              placeholder="請輸入姓名"
+              class="bg-transparent text-xs font-bold text-slate-800 focus:outline-none w-24 sm:w-28"
+              onchange="saveJudgeName()"
+            >
+          </div>
+
+          <!-- Quick Judge Select Chips -->
+          <div class="hidden lg:flex items-center space-x-1 bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs">
+            <button onclick="setQuickJudge('評審 A')" class="px-2 py-1 rounded bg-white font-bold text-slate-700 hover:text-sky-600 shadow-xs">評審A</button>
+            <button onclick="setQuickJudge('評審 B')" class="px-2 py-1 rounded bg-white font-bold text-slate-700 hover:text-sky-600 shadow-xs">評審B</button>
+            <button onclick="setQuickJudge('評審 C')" class="px-2 py-1 rounded bg-white font-bold text-slate-700 hover:text-sky-600 shadow-xs">評審C</button>
+          </div>
+
+          <!-- Google Sheet Status Button -->
+          <button onclick="openConfigModal()" id="sheetStatusBtn" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-medium bg-white text-slate-700 hover:bg-slate-50 transition shadow-xs">
+            <span class="w-2 h-2 rounded-full bg-amber-500" id="syncDot"></span>
+            <span id="syncText" data-zh="Google Sheet 連線" data-en="Google Sheet Sync">Google Sheet 連線</span>
+            <i class="fa-solid fa-gear text-slate-400 text-xs"></i>
+          </button>
+
+          <!-- Navigation Switcher Buttons -->
+          <button onclick="switchTab('scoring')" id="btnTabScoring" class="px-3 py-1.5 rounded-lg bg-slate-800 text-white text-xs font-bold hover:bg-slate-900 transition shadow-sm">
+            <i class="fa-solid fa-pen-to-square mr-1"></i>
+            <span data-zh="單班評分" data-en="Scoring">單班評分</span>
+          </button>
+
+          <button onclick="switchTab('leaderboard')" id="btnTabLeaderboard" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-sky-600 text-white text-xs font-bold hover:bg-sky-700 transition shadow-sm">
+            <i class="fa-solid fa-trophy"></i>
+            <span data-zh="排行榜 / 總表" data-en="Leaderboard">排行榜 / 總表</span>
+          </button>
+
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Application Body -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full">
+    
+    <!-- Tab View 1: Scoring Sheet -->
+    <div id="viewScoring" class="space-y-6">
+      
+      <!-- Top Overview Banner -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        
+        <!-- Score Progress Stats -->
+        <div class="light-card rounded-2xl p-4 flex items-center justify-between border-l-4 border-l-sky-500">
+          <div>
+            <p class="text-xs font-medium text-slate-500" data-zh="已評分班別" data-en="Scored Classes">已評分班別</p>
+            <h3 class="text-2xl font-black text-slate-800 font-tech mt-0.5"><span id="scoredCount">0</span> <span class="text-xs font-normal text-slate-400" data-zh="/ 16 班" data-en="/ 16 Classes">/ 16 班</span></h3>
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center text-lg">
+            <i class="fa-solid fa-clipboard-check"></i>
+          </div>
+        </div>
+
+        <!-- Average Score Stats -->
+        <div class="light-card rounded-2xl p-4 flex items-center justify-between border-l-4 border-l-indigo-500">
+          <div>
+            <p class="text-xs font-medium text-slate-500" data-zh="平均給分 (已完成班別)" data-en="Avg Score (Completed)">平均給分 (已完成班別)</p>
+            <h3 class="text-2xl font-black text-slate-800 font-tech mt-0.5" id="avgScoreDisplay">0.0 <span class="text-xs font-normal text-slate-400">/ 100</span></h3>
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg">
+            <i class="fa-solid fa-chart-line"></i>
+          </div>
+        </div>
+
+        <!-- Top Leading Class -->
+        <div class="light-card rounded-2xl p-4 flex items-center justify-between border-l-4 border-l-amber-500">
+          <div>
+            <p class="text-xs font-medium text-slate-500" data-zh="目前最高分班別" data-en="Top Leading Class">目前最高分班別</p>
+            <h3 class="text-2xl font-black text-amber-600 font-tech mt-0.5" id="topClassDisplay">--</h3>
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg">
+            <i class="fa-solid fa-crown"></i>
+          </div>
+        </div>
+
+        <!-- Google Sheet Sync Status -->
+        <div class="light-card rounded-2xl p-4 flex items-center justify-between border-l-4 border-l-emerald-500">
+          <div>
+            <p class="text-xs font-medium text-slate-500" data-zh="雲端同步狀態" data-en="Cloud Sync Status">雲端同步狀態</p>
+            <h3 class="text-sm font-bold text-slate-700 mt-1" id="cloudSyncStatusText">等待寫入...</h3>
+          </div>
+          <button onclick="syncAllToCloud()" class="px-2.5 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg text-xs font-bold border border-emerald-200 transition">
+            <i class="fa-solid fa-cloud-arrow-up mr-1"></i> <span data-zh="全部同步" data-en="Sync All">全部同步</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Main Workspace Grid (Left: Class Selector, Right: Scoring Form) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        <!-- Left Panel: 16 Class Cards Selection -->
+        <div class="lg:col-span-4 space-y-4">
+          <div class="light-card rounded-2xl p-4">
+            <div class="flex items-center justify-between mb-3">
+              <h2 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                <i class="fa-solid fa-school text-sky-600"></i> <span data-zh="請選擇班別 (共16班)" data-en="Select Class (16 total)">請選擇班別 (共16班)</span>
+              </h2>
+              <span class="text-[11px] text-slate-400" data-zh="點擊切換" data-en="Click to switch">點擊切換</span>
+            </div>
+
+            <!-- Class Grid -->
+            <div class="grid grid-cols-4 gap-2" id="classGrid">
+              <!-- JS will dynamically render classes -->
+            </div>
+          </div>
+
+          <!-- Board Photo Upload & Inspection Card -->
+          <div class="light-card rounded-2xl p-4 space-y-3 bg-white">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+              <h3 class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                <i class="fa-solid fa-image text-sky-600"></i>
+                <span data-zh="班別壁報相片" data-en="Board Photo Preview">班別壁報相片</span>
+              </h3>
+              <span class="text-[10px] text-sky-600 font-bold bg-sky-50 px-2 py-0.5 rounded" id="photoStatusBadge" data-zh="無相片" data-en="No Photo">無相片</span>
+            </div>
+
+            <!-- Photo Container / Dropzone -->
+            <div id="photoContainer" class="relative group border-2 border-dashed border-slate-300 rounded-xl p-2 text-center bg-slate-50 hover:bg-slate-100 transition cursor-pointer min-h-[160px] flex flex-col items-center justify-center">
+              
+              <div id="photoPlaceholder" class="space-y-1">
+                <i class="fa-solid fa-cloud-arrow-up text-2xl text-slate-400"></i>
+                <p class="text-xs font-bold text-slate-600" data-zh="上傳 / 拖放壁報相片" data-en="Upload / Drop Board Photo">上傳 / 拖放壁報相片</p>
+                <p class="text-[10px] text-slate-400" data-zh="支援 JPG, PNG 格式" data-en="Supports JPG, PNG">支援 JPG, PNG 格式</p>
+              </div>
+
+              <!-- Preview Image Display -->
+              <img id="boardPhotoImg" class="hidden w-full max-h-48 object-cover rounded-lg shadow-xs" alt="Board Photo">
+
+              <!-- Hidden File Input -->
+              <input type="file" id="boardPhotoInput" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" onchange="handleImageUpload(event)">
+            </div>
+
+            <!-- Photo Control Buttons -->
+            <div id="photoControls" class="hidden flex items-center justify-between gap-2 pt-1">
+              <button onclick="openImageModal()" type="button" class="flex-1 py-1.5 px-2 bg-sky-50 hover:bg-sky-100 text-sky-700 font-bold text-xs rounded-lg border border-sky-200 transition flex items-center justify-center gap-1">
+                <i class="fa-solid fa-magnifying-glass-plus"></i> <span data-zh="放大檢視" data-en="Zoom Photo">放大檢視</span>
+              </button>
+              <button onclick="removeBoardPhoto()" type="button" class="py-1.5 px-2 bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-xs rounded-lg border border-rose-200 transition">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Quick Competition Rubric Reminder Card -->
+          <div class="light-card rounded-2xl p-4 space-y-3 bg-gradient-to-br from-sky-50/50 to-white">
+            <h3 class="text-xs font-bold text-sky-900 flex items-center gap-1.5">
+              <i class="fa-solid fa-circle-info text-sky-600"></i> 
+              <span data-zh="主題評分重點提示" data-en="Scoring Rubric Guidelines">主題評分重點提示</span>
+            </h3>
+            <p class="text-xs text-slate-600 leading-relaxed" data-zh="<strong>主題：AI與未來世界</strong><br>旨在鼓勵學生探索人工智能發展潛力，構想未來科技進步，並反思科技對人類生活及社會的影響。" data-en="<strong>Theme: AI & Future World</strong><br>Encourages students to explore AI potential, envision future tech advancements, and reflect on technological impact on society.">
+              <strong>主題：AI與未來世界</strong><br>
+              旨在鼓勵學生探索人工智能發展潛力，構想未來科技進步，並反思科技對人類生活及社會的影響。
+            </p>
+            <div class="text-[11px] text-slate-500 space-y-1 border-t border-slate-200 pt-2">
+              <div class="flex justify-between"><span data-zh="• 內容 Content" data-en="• Content">• 內容 Content</span><span class="font-bold text-slate-700">40分 (40%)</span></div>
+              <div class="flex justify-between"><span data-zh="• 創意 Creativity" data-en="• Creativity">• 創意 Creativity</span><span class="font-bold text-slate-700">30分 (30%)</span></div>
+              <div class="flex justify-between"><span data-zh="• 完整度 Completeness" data-en="• Completeness">• 完整度 Completeness</span><span class="font-bold text-slate-700">30分 (30%)</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Panel: Interactive Scoring Sheet for Selected Class -->
+        <div class="lg:col-span-8 space-y-6">
+          
+          <div class="light-card rounded-2xl p-6 relative overflow-hidden">
+            
+            <!-- Class Title Header -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-5 border-b border-slate-200 gap-3">
+              <div>
+                <div class="flex items-center space-x-3">
+                  <span class="text-3xl font-black text-sky-700 font-tech" id="currentClassTitle">1A</span>
+                  <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200" id="currentClassStatus" data-zh="未評分" data-en="Unscored">未評分</span>
+                </div>
+                <p class="text-xs text-slate-500 mt-1" data-zh="班際壁報評分表 / Board Decoration Score Sheet" data-en="Board Decoration Score Sheet">班際壁報評分表 / Board Decoration Score Sheet</p>
+              </div>
+
+              <!-- Total Score Display Pill -->
+              <div class="flex items-center space-x-3 bg-sky-50 border border-sky-100 px-4 py-2 rounded-2xl">
+                <div class="text-right">
+                  <span class="text-[10px] uppercase tracking-wider text-sky-600 font-bold block" data-zh="目前總分 Total" data-en="Total Score">目前總分 Total</span>
+                  <span class="text-2xl font-black text-sky-900 font-tech leading-none" id="totalScore">0</span>
+                  <span class="text-xs text-sky-600 font-bold">/ 100</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Scoring Criteria Blocks -->
+            <div class="space-y-6 pt-6">
+
+              <!-- Criterion 1: Content (40 Points) -->
+              <div class="space-y-3 bg-slate-50/70 p-4 rounded-xl border border-slate-200">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <div class="flex items-center space-x-2">
+                      <span class="w-6 h-6 rounded-full bg-sky-600 text-white font-bold text-xs flex items-center justify-center">1</span>
+                      <h3 class="text-sm font-bold text-slate-800" data-zh="內容 Content" data-en="Content">內容 Content</h3>
+                      <span class="text-xs font-bold text-sky-600 bg-sky-100 px-2 py-0.5 rounded-full" data-zh="最高 40分" data-en="Max 40 pts">最高 40分</span>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-1 pl-8" data-zh="清晰展現「AI與未來世界」主題，傳遞對未來科技發展的想像與反思 (如改善生活、未來城市、人機關係)。" data-en="Clearly conveys the theme 'AI & Future World', demonstrating imagination and reflection on future technology.">
+                      清晰展現「AI與未來世界」主題，傳遞對未來科技發展的想像與反思 (如改善生活、未來城市、人機關係)。
+                    </p>
+                  </div>
+                  <div class="flex items-center space-x-1 font-tech">
+                    <input 
+                      type="number" 
+                      id="scoreContent" 
+                      min="0" 
+                      max="40" 
+                      value="0" 
+                      oninput="onScoreInputChange('content')"
+                      class="w-16 text-center text-lg font-bold text-sky-700 bg-white border border-slate-300 rounded-lg p-1 focus:ring-2 focus:ring-sky-500 focus:outline-none"
+                    >
+                    <span class="text-xs text-slate-400 font-medium">/ 40</span>
+                  </div>
+                </div>
+
+                <!-- Range Buttons Quick Select -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+                  <button type="button" onclick="setScore('content', 38)" class="text-left p-2 rounded-lg bg-white border border-slate-200 hover:border-sky-500 hover:bg-sky-50 transition text-xs">
+                    <div class="font-bold text-emerald-600" data-zh="36–40分 (極佳)" data-en="36–40 pts (Excellent)">36–40分 (極佳)</div>
+                    <div class="text-[10px] text-slate-400 truncate" data-zh="主題完整具深度與啟發性" data-en="Deep & inspiring theme">主題完整具深度與啟發性</div>
+                  </button>
+                  <button type="button" onclick="setScore('content', 33)" class="text-left p-2 rounded-lg bg-white border border-slate-200 hover:border-sky-500 hover:bg-sky-50 transition text-xs">
+                    <div class="font-bold text-sky-600" data-zh="30–35分 (良好)" data-en="30–35 pts (Good)">30–35分 (良好)</div>
+                    <div class="text-[10px] text-slate-400 truncate" data-zh="特色展現，表達尚可" data-en="Clear message & ideas">特色展現，表達尚可</div>
+                  </button>
+                  <button type="button" onclick="setScore('content', 25)" class="text-left p-2 rounded-lg bg-white border border-slate-200 hover:border-sky-500 hover:bg-sky-50 transition text-xs">
+                    <div class="font-bold text-amber-600" data-zh="20–29分 (尚可)" data-en="20–29 pts (Fair)">20–29分 (尚可)</div>
+                    <div class="text-[10px] text-slate-400 truncate" data-zh="主題表達有限" data-en="Basic theme representation">主題表達有限</div>
+                  </button>
+                  <button type="button" onclick="setScore('content', 12)" class="text-left p-2 rounded-lg bg-white border border-slate-200 hover:border-sky-500 hover:bg-sky-50 transition text-xs">
+                    <div class="font-bold text-rose-600" data-zh="0–19分 (需改善)" data-en="0–19 pts (Needs Improvement)">0–19分 (需改善)</div>
+                    <div class="text-[10px] text-slate-400 truncate" data-zh="特色不明確或偏離主題" data-en="Off topic or unclear">特色不明確或偏離主題</div>
+                  </button>
+                </div>
+
+                <input 
+                  type="range" 
+                  id="sliderContent" 
+                  min="0" 
+                  max="40" 
+                  value="0" 
+                  oninput="onSliderChange('content')"
+                  class="w-full accent-sky-600 cursor-pointer"
+                >
+              </div>
+
+              <!-- Criterion 2: Creativity & Design (30 Points) -->
+              <div class="space-y-3 bg-slate-50/70 p-4 rounded-xl border border-slate-200">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <div class="flex items-center space-x-2">
+                      <span class="w-6 h-6 rounded-full bg-indigo-600 text-white font-bold text-xs flex items-center justify-center">2</span>
+                      <h3 class="text-sm font-bold text-slate-800" data-zh="創意及設計 Creativity & Design" data-en="Creativity & Design">創意及設計 Creativity & Design</h3>
+                      <span class="text-xs font-bold text-indigo-600 bg-indigo-100 px-2 py-0.5 rounded-full" data-zh="最高 30分" data-en="Max 30 pts">最高 30分</span>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-1 pl-8" data-zh="版面協調易讀、構思新穎獨特（融入未來感/科幻元素）、色彩搭配協調美觀。" data-en="Aesthetically pleasing layout, innovative futuristic design, and balanced color scheme.">
+                      版面協調易讀、構思新穎獨特（融入未來感/科幻元素）、色彩搭配協調美觀。
+                    </p>
+                  </div>
+                  <div class="flex items-center space-x-1 font-tech">
+                    <input 
+                      type="number" 
+                      id="scoreCreativity" 
+                      min="0" 
+                      max="30" 
+                      value="0" 
+                      oninput="onScoreInputChange('creativity')"
+                      class="w-16 text-center text-lg font-bold text-indigo-700 bg-white border border-slate-300 rounded-lg p-1 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    >
+                    <span class="text-xs text-slate-400 font-medium">/ 30</span>
+                  </div>
+                </div>
+
+                <!-- Range Buttons Quick Select -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+                  <button type="button" onclick="setScore('creativity', 28)" class="text-left p-2 rounded-lg bg-white border border-slate-200 hover:border-indigo-500 hover:bg-indigo-50 transition text-xs">
+                    <div class="font-bold text-emerald-600" data-zh="27–30分 (極佳)" data-en="27–30 pts (Excellent)">27–30分 (極佳)</div>
+                    <div class="text-[10px] text-slate-400 truncate" data-zh="極具未來感，構思新穎" data-en="Highly creative & futuristic">極具未來感，構思新穎</div>
+                  </button>
+                  <button type="button" onclick="setScore('creativity', 24)" class="text-left p-2 rounded-lg bg-white border border-slate-200 hover:border-indigo-500 hover:bg-indigo-50 transition text-xs">
+                    <div class="font-bold text-sky-600" data-zh="21–26分 (良好)" data-en="21–26 pts (Good)">21–26分 (良好)</div>
+                    <div class="text-[10px] text-slate-400 truncate" data-zh="整體協調，具科技感" data-en="Well-balanced design">整體協調，具科技感</div>
+                  </button>
+                  <button type="button" onclick="setScore('creativity', 18)" class="text-left p-2 rounded-lg bg-white border border-slate-200 hover:border-indigo-500 hover:bg-indigo-50 transition text-xs">
+                    <div class="font-bold text-amber-600" data-zh="15–20分 (尚可)" data-en="15–20 pts (Fair)">15–20分 (尚可)</div>
+                    <div class="text-[10px] text-slate-400 truncate" data-zh="版面一般，視覺效果有限" data-en="Ordinary visual impact">版面一般，視覺效果有限</div>
+                  </button>
+                  <button type="button" onclick="setScore('creativity', 10)" class="text-left p-2 rounded-lg bg-white border border-slate-200 hover:border-indigo-500 hover:bg-indigo-50 transition text-xs">
+                    <div class="font-bold text-rose-600" data-zh="0–14分 (需改善)" data-en="0–14 pts (Needs Improvement)">0–14分 (需改善)</div>
+                    <div class="text-[10px] text-slate-400 truncate" data-zh="版面混亂，缺乏創意" data-en="Lacks visual appeal">版面混亂，缺乏創意</div>
+                  </button>
+                </div>
+
+                <input 
+                  type="range" 
+                  id="sliderCreativity" 
+                  min="0" 
+                  max="30" 
+                  value="0" 
+                  oninput="onSliderChange('creativity')"
+                  class="w-full accent-indigo-600 cursor-pointer"
+                >
+              </div>
+
+              <!-- Criterion 3: Completeness & Quality (30 Points) -->
+              <div class="space-y-3 bg-slate-50/70 p-4 rounded-xl border border-slate-200">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <div class="flex items-center space-x-2">
+                      <span class="w-6 h-6 rounded-full bg-purple-600 text-white font-bold text-xs flex items-center justify-center">3</span>
+                      <h3 class="text-sm font-bold text-slate-800" data-zh="完整度與製作質素 Completeness" data-en="Completeness & Quality">完整度與製作質素 Completeness</h3>
+                      <span class="text-xs font-bold text-purple-600 bg-purple-100 px-2 py-0.5 rounded-full" data-zh="最高 30分" data-en="Max 30 pts">最高 30分</span>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-1 pl-8" data-zh="製作精細整潔、文字內容通順流暢、無錯別字或文法錯誤。" data-en="Neat crafting quality, fluent textual descriptions, and zero grammar/spelling errors.">
+                      製作精細整潔、文字內容通順流暢、無錯別字或文法錯誤。
+                    </p>
+                  </div>
+                  <div class="flex items-center space-x-1 font-tech">
+                    <input 
+                      type="number" 
+                      id="scoreCompleteness" 
+                      min="0" 
+                      max="30" 
+                      value="0" 
+                      oninput="onScoreInputChange('completeness')"
+                      class="w-16 text-center text-lg font-bold text-purple-700 bg-white border border-slate-300 rounded-lg p-1 focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                    >
+                    <span class="text-xs text-slate-400 font-medium">/ 30</span>
+                  </div>
+                </div>
+
+                <!-- Range Buttons Quick Select -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+                  <button type="button" onclick="setScore('completeness', 28)" class="text-left p-2 rounded-lg bg-white border border-slate-200 hover:border-purple-500 hover:bg-purple-50 transition text-xs">
+                    <div class="font-bold text-emerald-600" data-zh="27–30分 (極佳)" data-en="27–30 pts (Excellent)">27–30分 (極佳)</div>
+                    <div class="text-[10px] text-slate-400 truncate" data-zh="精細整潔，文字無誤" data-en="Extremely neat, flawless">精細整潔，文字無誤</div>
+                  </button>
+                  <button type="button" onclick="setScore('completeness', 24)" class="text-left p-2 rounded-lg bg-white border border-slate-200 hover:border-purple-500 hover:bg-purple-50 transition text-xs">
+                    <div class="font-bold text-sky-600" data-zh="21–26分 (良好)" data-en="21–26 pts (Good)">21–26分 (良好)</div>
+                    <div class="text-[10px] text-slate-400 truncate" data-zh="製作整齊，少量錯誤" data-en="Neat with minor errors">製作整齊，少量錯誤</div>
+                  </button>
+                  <button type="button" onclick="setScore('completeness', 18)" class="text-left p-2 rounded-lg bg-white border border-slate-200 hover:border-purple-500 hover:bg-purple-50 transition text-xs">
+                    <div class="font-bold text-amber-600" data-zh="15–20分 (尚可)" data-en="15–20 pts (Fair)">15–20分 (尚可)</div>
+                    <div class="text-[10px] text-slate-400 truncate" data-zh="製作粗略或有明顯錯誤" data-en="Average quality or typos">製作粗略或有明顯錯誤</div>
+                  </button>
+                  <button type="button" onclick="setScore('completeness', 10)" class="text-left p-2 rounded-lg bg-white border border-slate-200 hover:border-purple-500 hover:bg-purple-50 transition text-xs">
+                    <div class="font-bold text-rose-600" data-zh="0–14分 (需改善)" data-en="0–14 pts (Needs Improvement)">0–14分 (需改善)</div>
+                    <div class="text-[10px] text-slate-400 truncate" data-zh="不整齊，文字錯誤多" data-en="Untidy with many errors">不整齊，文字錯誤多</div>
+                  </button>
+                </div>
+
+                <input 
+                  type="range" 
+                  id="sliderCompleteness" 
+                  min="0" 
+                  max="30" 
+                  value="0" 
+                  oninput="onSliderChange('completeness')"
+                  class="w-full accent-purple-600 cursor-pointer"
+                >
+              </div>
+
+              <!-- Comments Section with Quick Chips -->
+              <div class="space-y-2 pt-2">
+                <label class="text-xs font-bold text-slate-700 flex items-center justify-between">
+                  <span><i class="fa-solid fa-comment-dots text-sky-600 mr-1"></i> <span data-zh="評語與建議 Comments" data-en="Comments & Suggestions">評語與建議 Comments</span></span>
+                  <span class="text-[10px] text-slate-400" data-zh="點擊下方快速寫入評語" data-en="Click chips to insert comments">點擊下方快速寫入評語</span>
+                </label>
+
+                <!-- Quick Comment Chips -->
+                <div class="flex flex-wrap gap-1.5 mb-2">
+                  <button type="button" onclick="appendComment('主題極具啟發性 / Inspiring Theme')" class="text-[11px] bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200 px-2 py-0.5 rounded-full">+ 主題極具啟發性 Inspiring Theme</button>
+                  <button type="button" onclick="appendComment('未來科技感濃厚 / Strong Futuristic Vibe')" class="text-[11px] bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200 px-2 py-0.5 rounded-full">+ 未來科技感濃厚 Futuristic Vibe</button>
+                  <button type="button" onclick="appendComment('色彩搭配和諧 / Great Color Palette')" class="text-[11px] bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200 px-2 py-0.5 rounded-full">+ 色彩搭配和諧 Color Palette</button>
+                  <button type="button" onclick="appendComment('手工製作精細 / Delicate Craftsmanship')" class="text-[11px] bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200 px-2 py-0.5 rounded-full">+ 手工製作精細 Fine Craftsmanship</button>
+                  <button type="button" onclick="appendComment('建議加強文字層次 / Improve Text Hierarchy')" class="text-[11px] bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200 px-2 py-0.5 rounded-full">- 建議加強文字層次 Text Hierarchy</button>
+                  <button type="button" onclick="appendComment('注意文字錯別字 / Check Spelling')" class="text-[11px] bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200 px-2 py-0.5 rounded-full">- 注意文字錯別字 Check Typos</button>
+                </div>
+
+                <textarea 
+                  id="commentsInput" 
+                  rows="3" 
+                  placeholder="可在此輸入詳細評語或建議..."
+                  class="w-full text-xs p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none"
+                ></textarea>
+              </div>
+
+              <!-- Action Bar -->
+              <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-200">
+                <button type="button" onclick="resetCurrentForm()" class="px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-800 transition">
+                  <i class="fa-solid fa-rotate-left mr-1"></i> <span data-zh="重設本班" data-en="Reset Form">重設本班</span>
+                </button>
+
+                <div class="flex items-center space-x-2 w-full sm:w-auto">
+                  <button type="button" onclick="saveCurrentScore(false)" class="flex-1 sm:flex-none px-5 py-2.5 bg-slate-800 text-white text-xs font-bold rounded-xl hover:bg-slate-900 transition shadow-sm">
+                    <i class="fa-solid fa-floppy-disk mr-1.5"></i> <span data-zh="暫存分數" data-en="Save Draft">暫存分數</span>
+                  </button>
+                  <button type="button" onclick="saveAndSyncCurrentScore()" class="flex-1 sm:flex-none px-6 py-2.5 bg-sky-600 text-white text-xs font-bold rounded-xl hover:bg-sky-700 transition shadow-md shadow-sky-200 flex items-center justify-center">
+                    <i class="fa-solid fa-cloud-arrow-up mr-1.5"></i> <span data-zh="儲存並同步至 Google Sheet" data-en="Save & Sync to Sheet">儲存並同步至 Google Sheet</span>
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Tab View 2: Leaderboard & School Summary -->
+    <div id="viewLeaderboard" class="hidden space-y-6">
+      
+      <!-- Top Podium Standings -->
+      <div>
+        <h2 class="text-base font-black text-slate-800 mb-3 flex items-center gap-2">
+          <i class="fa-solid fa-trophy text-amber-500"></i>
+          <span data-zh="全校前三名頒獎台" data-en="Top 3 Podium Winners">全校前三名頒獎台</span>
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="podiumCards">
+          <!-- JS dynamic render top 3 -->
+        </div>
+      </div>
+
+      <!-- Controls & Export Toolbar -->
+      <div class="light-card rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4">
+        
+        <!-- Filter Controls -->
+        <div class="flex items-center space-x-2">
+          <span class="text-xs font-bold text-slate-600" data-zh="年級篩選:" data-en="Filter Grade:">年級篩選:</span>
+          <select id="formFilter" onchange="renderLeaderboard()" class="bg-slate-50 border border-slate-300 text-xs font-bold text-slate-800 rounded-lg px-3 py-1.5 focus:outline-none">
+            <option value="ALL">全部班別 (16班)</option>
+            <option value="F1">中一 (1A)</option>
+            <option value="F2">中二 (2A)</option>
+            <option value="F3">中三 (3A, 3B, 3C)</option>
+            <option value="F4">中四 (4A, 4B, 4C, 4D)</option>
+            <option value="F5">中五 (5A, 5B, 5C, 5D)</option>
+            <option value="F6">中六 (6A, 6B, 6C)</option>
+          </select>
+        </div>
+
+        <!-- Export Buttons -->
+        <div class="flex items-center space-x-2">
+          <button onclick="copyTableTSV()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg border border-slate-300 transition flex items-center gap-1.5">
+            <i class="fa-solid fa-copy"></i>
+            <span data-zh="複製 Excel 表格 (TSV)" data-en="Copy TSV">複製 Excel 表格 (TSV)</span>
+          </button>
+
+          <button onclick="exportCSV()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold rounded-lg transition flex items-center gap-1.5">
+            <i class="fa-solid fa-file-csv"></i>
+            <span data-zh="下載 CSV 報表" data-en="Export CSV">下載 CSV 報表</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Main Ranking Table -->
+      <div class="light-card rounded-2xl overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-100 border-b border-slate-200 text-[11px] font-bold text-slate-600 uppercase tracking-wider">
+                <th class="py-3 px-4">名次</th>
+                <th class="py-3 px-4">班別</th>
+                <th class="py-3 px-4">評審員</th>
+                <th class="py-3 px-4">內容 (40)</th>
+                <th class="py-3 px-4">創意 (30)</th>
+                <th class="py-3 px-4">完整度 (30)</th>
+                <th class="py-3 px-4">總分 (100)</th>
+                <th class="py-3 px-4">評語與建議</th>
+                <th class="py-3 px-4 text-center">操作</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboardTableBody" class="divide-y divide-slate-200 text-xs">
+              <!-- JS dynamic render -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Lightbox Modal for HD Board Image Inspection -->
+  <div id="imageModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden" onclick="closeImageModal()">
+    <div class="relative max-w-5xl max-h-[90vh] w-full flex flex-col items-center justify-center" onclick="event.stopPropagation()">
+      <button onclick="closeImageModal()" class="absolute -top-10 right-0 text-white hover:text-slate-300 text-2xl font-bold">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div class="bg-white/10 p-2 rounded-2xl border border-white/20 shadow-2xl backdrop-blur-sm">
+        <img id="modalBoardImage" src="" class="max-h-[80vh] w-auto max-w-full rounded-xl object-contain shadow-2xl" alt="Board Photo HD">
+      </div>
+      <p class="text-white text-xs font-bold mt-3 bg-slate-900/60 px-4 py-1.5 rounded-full backdrop-blur-md" id="modalImageCaption">1A 班壁報相片</p>
+    </div>
+  </div>
+
+  <!-- Google Sheet Integration Settings Modal -->
+  <div id="configModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden" onclick="closeConfigModal()">
+    <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200 relative overflow-hidden" onclick="event.stopPropagation()">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-file-excel text-emerald-600"></i>
+          <span data-zh="Google Sheet 雲端同步設定" data-en="Google Sheet Integration Settings">Google Sheet 雲端同步設定</span>
+        </h3>
+        <button onclick="closeConfigModal()" class="text-slate-400 hover:text-slate-600 text-lg">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4 pt-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1" data-zh="Google Apps Script Web App 網址" data-en="Google Apps Script Web App URL">Google Apps Script Web App 網址</label>
+          <input 
+            type="url" 
+            id="webAppUrlInput" 
+            placeholder="https://script.google.com/macros/s/AKfycbx.../exec"
+            class="w-full text-xs p-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none"
+          >
+          <p class="text-[11px] text-slate-400 mt-1" data-zh="將發佈好的 Web App URL 貼上於此，多位評審即可同步寫入同一張 Google Sheet" data-en="Paste deployed Web App URL here so all judges sync to the same sheet">將發佈好的 Web App URL 貼上於此，多位評審即可同步寫入同一張 Google Sheet</p>
+        </div>
+
+        <!-- Google Apps Script Code Setup Box -->
+        <div class="bg-slate-50 border border-slate-200 p-3 rounded-xl space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-700" data-zh="Google Apps Script 後端程式碼" data-en="Apps Script Backend Code">Google Apps Script 後端程式碼</span>
+            <button onclick="copyAppsScriptCode()" class="text-[11px] bg-sky-50 text-sky-700 hover:bg-sky-100 px-2 py-1 rounded font-bold border border-sky-200">
+              <i class="fa-solid fa-copy mr-1"></i> <span data-zh="複製程式碼" data-en="Copy Script">複製程式碼</span>
+            </button>
+          </div>
+          <pre id="appsScriptCode" class="text-[10px] text-slate-600 bg-slate-900 text-slate-200 p-2.5 rounded-lg overflow-x-auto font-mono max-h-36">
+function doPost(e) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var rawSheet = ss.getSheetByName("評分紀錄_Raw");
+    if (!rawSheet) {
+      rawSheet = ss.insertSheet("評分紀錄_Raw");
+      rawSheet.appendRow(["時間戳記", "評審員", "班別", "內容(40)", "創意(30)", "完整度(30)", "總分(100)", "評語"]);
+    }
+    
+    var data = JSON.parse(e.postData.contents);
+    var judge = data.judge || "未具名評審";
+    var scores = data.scores || [];
+    
+    scores.forEach(function(item) {
+      rawSheet.appendRow([
+        new Date().toLocaleString(),
+        judge,
+        item.className,
+        item.content,
+        item.creativity,
+        item.completeness,
+        item.total,
+        item.comments
+      ]);
+    });
+    
+    return ContentService.createTextOutput(JSON.stringify({status: "success"}))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({status: "error", message: err.toString()}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+          </pre>
+        </div>
+
+        <div class="flex items-center justify-end space-x-2 pt-2">
+          <button onclick="closeConfigModal()" class="px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-800">
+            <span data-zh="取消" data-en="Cancel">取消</span>
+          </button>
+          <button onclick="saveWebAppUrl()" class="px-5 py-2 bg-sky-600 text-white text-xs font-bold rounded-xl hover:bg-sky-700 transition">
+            <span data-zh="儲存網址" data-en="Save URL">儲存網址</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Alert Floating Box -->
+  <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white text-xs font-bold px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-2.5 z-50 transition-all duration-300 opacity-0 translate-y-4 pointer-events-none">
+    <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400"></i>
+    <span id="toastMsg">已儲存評分</span>
+  </div>
+
+  <script>
+    // System Constants
+    const CLASS_LIST = ['1A','2A','3A','3B','3C','4A','4B','4C','4D','5A','5B','5C','5D','6A','6B','6C'];
+    
+    // Application State Variables
+    let currentSelectedClass = '1A';
+    let judgeName = '評審 A';
+    let webAppUrl = '';
+    let scoresData = {};
+    let currentLang = 'bilingual'; // 'bilingual', 'zh', 'en'
+
+    // Helper Utility: Capitalize
+    function capitalize(str) {
+      if (!str) return '';
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    // Initialization on Page Load
+    window.addEventListener('DOMContentLoaded', () => {
+      try {
+        loadLocalStorageData();
+        applyLanguage();
+        renderClassGrid();
+        loadClassToForm(currentSelectedClass);
+        updateOverviewStats();
+        updateSyncStatusIndicator();
+      } catch (err) {
+        console.error("Initialization Error:", err);
+      }
+    });
+
+    function calculateTotal() {
+      const c = parseInt(document.getElementById('scoreContent').value) || 0;
+      const cr = parseInt(document.getElementById('scoreCreativity').value) || 0;
+      const cm = parseInt(document.getElementById('scoreCompleteness').value) || 0;
+
+      const clampedC = Math.min(40, Math.max(0, c));
+      const clampedCr = Math.min(30, Math.max(0, cr));
+      const clampedCm = Math.min(30, Math.max(0, cm));
+
+      const total = clampedC + clampedCr + clampedCm;
+      const totalEl = document.getElementById('totalScore');
+      if (totalEl) totalEl.innerText = total;
+
+      return total;
+    }
+
+    function onScoreInputChange(criterion) {
+      const capKey = capitalize(criterion);
+      let val = parseInt(document.getElementById('score' + capKey).value) || 0;
+      const maxMap = { content: 40, creativity: 30, completeness: 30 };
+
+      if (val > maxMap[criterion]) val = maxMap[criterion];
+      if (val < 0) val = 0;
+
+      document.getElementById('score' + capKey).value = val;
+      document.getElementById('slider' + capKey).value = val;
+      calculateTotal();
+    }
+
+    function onSliderChange(criterion) {
+      const capKey = capitalize(criterion);
+      const val = document.getElementById('slider' + capKey).value;
+      document.getElementById('score' + capKey).value = val;
+      calculateTotal();
+    }
+
+    function setScore(criterion, val) {
+      const capKey = capitalize(criterion);
+      document.getElementById('score' + capKey).value = val;
+      document.getElementById('slider' + capKey).value = val;
+      calculateTotal();
+    }
+
+    function switchTab(tabName) {
+      const viewScoring = document.getElementById('viewScoring');
+      const viewLeaderboard = document.getElementById('viewLeaderboard');
+      const btnScoring = document.getElementById('btnTabScoring');
+      const btnLeaderboard = document.getElementById('btnTabLeaderboard');
+
+      if (tabName === 'leaderboard') {
+        viewScoring.classList.add('hidden');
+        viewLeaderboard.classList.remove('hidden');
+        renderLeaderboard();
+      } else {
+        viewScoring.classList.remove('hidden');
+        viewLeaderboard.classList.add('hidden');
+      }
+    }
+
+    function selectClass(cls) {
+      saveCurrentScore(true);
+      currentSelectedClass = cls;
+      renderClassGrid();
+      loadClassToForm(cls);
+    }
+
+    // Language switcher logic
+    function setLanguage(lang) {
+      currentLang = lang;
+      localStorage.setItem('delia_lang_preference', currentLang);
+      applyLanguage();
+    }
+
+    function applyLanguage() {
+      document.getElementById('langBtnBilingual').className = currentLang === 'bilingual' ? "px-2 py-1 rounded bg-white text-sky-700 font-bold shadow-xs" : "px-2 py-1 rounded text-slate-600 hover:text-sky-600";
+      document.getElementById('langBtnZh').className = currentLang === 'zh' ? "px-2 py-1 rounded bg-white text-sky-700 font-bold shadow-xs" : "px-2 py-1 rounded text-slate-600 hover:text-sky-600";
+      document.getElementById('langBtnEn').className = currentLang === 'en' ? "px-2 py-1 rounded bg-white text-sky-700 font-bold shadow-xs" : "px-2 py-1 rounded text-slate-600 hover:text-sky-600";
+
+      const elements = document.querySelectorAll('[data-zh][data-en]');
+      elements.forEach(el => {
+        const zh = el.getAttribute('data-zh');
+        const en = el.getAttribute('data-en');
+
+        if (currentLang === 'zh') {
+          el.innerHTML = zh;
+        } else if (currentLang === 'en') {
+          el.innerHTML = en;
+        } else {
+          if (zh === en) {
+            el.innerHTML = zh;
+          } else if (zh.includes('/') || en.includes('/')) {
+            el.innerHTML = `${zh} / ${en}`;
+          } else {
+            el.innerHTML = `${zh} <span class="text-[11px] opacity-75 font-normal ml-0.5">(${en})</span>`;
+          }
+        }
+      });
+    }
+
+    // Load persisted local data safely
+    function loadLocalStorageData() {
+      try {
+        const savedLang = localStorage.getItem('delia_lang_preference');
+        if (savedLang) currentLang = savedLang;
+
+        const savedJudge = localStorage.getItem('delia_judge_name');
+        if (savedJudge) {
+          judgeName = savedJudge;
+          document.getElementById('judgeNameInput').value = judgeName;
+        }
+
+        const savedUrl = localStorage.getItem('delia_webapp_url');
+        if (savedUrl) {
+          webAppUrl = savedUrl;
+          document.getElementById('webAppUrlInput').value = webAppUrl;
+        }
+
+        const savedScores = localStorage.getItem('delia_scores_data');
+        if (savedScores) {
+          scoresData = JSON.parse(savedScores) || {};
+        }
+      } catch (e) {
+        console.warn("Could not load from LocalStorage:", e);
+        scoresData = {};
+      }
+    }
+
+    function saveToLocalStorage() {
+      try {
+        localStorage.setItem('delia_scores_data', JSON.stringify(scoresData));
+      } catch (e) {
+        console.warn("LocalStorage quota exceeded or error:", e);
+      }
+    }
+
+    function saveJudgeName() {
+      const val = document.getElementById('judgeNameInput').value.trim();
+      if (val) {
+        judgeName = val;
+        localStorage.setItem('delia_judge_name', judgeName);
+        showToast(`評審姓名已設為：${judgeName}`);
+      }
+    }
+
+    function setQuickJudge(name) {
+      judgeName = name;
+      document.getElementById('judgeNameInput').value = name;
+      localStorage.setItem('delia_judge_name', judgeName);
+      showToast(`已切換評審身份為：${judgeName}`);
+    }
+
+    // Board Photo Processing (Compressed Base64 storage)
+    function handleImageUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith('image/')) {
+        showToast('請上傳有效的圖片檔案 (JPG / PNG)', 'warn');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          const maxDim = 1000;
+
+          if (width > maxDim || height > maxDim) {
+            if (width > height) {
+              height = Math.round((height * maxDim) / width);
+              width = maxDim;
+            } else {
+              width = Math.round((width * maxDim) / height);
+              height = maxDim;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+
+          if (!scoresData[currentSelectedClass]) {
+            scoresData[currentSelectedClass] = { className: currentSelectedClass, content: 0, creativity: 0, completeness: 0, total: 0, comments: '', isSaved: false };
+          }
+          scoresData[currentSelectedClass].photo = compressedDataUrl;
+
+          saveToLocalStorage();
+          updatePhotoUI(compressedDataUrl);
+          renderClassGrid();
+          showToast(`已成功為 ${currentSelectedClass} 班上傳壁報相片！`);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removeBoardPhoto() {
+      if (scoresData[currentSelectedClass]) {
+        delete scoresData[currentSelectedClass].photo;
+        saveToLocalStorage();
+      }
+      updatePhotoUI(null);
+      renderClassGrid();
+      showToast(`已刪除 ${currentSelectedClass} 班的相片`);
+    }
+
+    function updatePhotoUI(photoDataUrl) {
+      const img = document.getElementById('boardPhotoImg');
+      const placeholder = document.getElementById('photoPlaceholder');
+      const controls = document.getElementById('photoControls');
+      const statusBadge = document.getElementById('photoStatusBadge');
+
+      if (photoDataUrl) {
+        img.src = photoDataUrl;
+        img.classList.remove('hidden');
+        placeholder.classList.add('hidden');
+        controls.classList.remove('hidden');
+        statusBadge.innerText = '已上傳相片';
+        statusBadge.className = 'text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200';
+      } else {
+        img.src = '';
+        img.classList.add('hidden');
+        placeholder.classList.remove('hidden');
+        controls.classList.add('hidden');
+        statusBadge.innerText = '無相片';
+        statusBadge.className = 'text-[10px] text-slate-500 font-bold bg-slate-100 px-2 py-0.5 rounded';
+        document.getElementById('boardPhotoInput').value = '';
+      }
+    }
+
+    function openImageModal(photoUrl = null, className = null) {
+      const targetPhoto = photoUrl || (scoresData[currentSelectedClass] ? scoresData[currentSelectedClass].photo : null);
+      const targetClass = className || currentSelectedClass;
+
+      if (!targetPhoto) return;
+
+      document.getElementById('modalBoardImage').src = targetPhoto;
+      document.getElementById('modalImageCaption').innerText = `${targetClass} 班壁報照片大圖`;
+      document.getElementById('imageModal').classList.remove('hidden');
+    }
+
+    function closeImageModal() {
+      document.getElementById('imageModal').classList.add('hidden');
+    }
+
+    function renderClassGrid() {
+      const grid = document.getElementById('classGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      CLASS_LIST.forEach(cls => {
+        const data = scoresData[cls];
+        const isScored = data && data.isSaved;
+        const hasPhoto = data && data.photo;
+        const isSelected = cls === currentSelectedClass;
+
+        let btnClass = "p-2.5 rounded-xl text-center border font-tech transition-all flex flex-col items-center justify-center relative overflow-hidden ";
+        
+        if (isSelected) {
+          btnClass += "bg-sky-600 text-white border-sky-600 shadow-md ring-2 ring-sky-300 font-black";
+        } else if (isScored) {
+          btnClass += "bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100 font-bold";
+        } else {
+          btnClass += "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 font-semibold";
+        }
+
+        const scoreText = isScored ? `${data.total}分` : '未評分';
+
+        grid.innerHTML += `
+          <button type="button" onclick="selectClass('${cls}')" class="${btnClass}">
+            <span class="text-sm flex items-center justify-center gap-1">
+              ${cls}
+              ${hasPhoto ? '<i class="fa-solid fa-camera text-[10px] text-amber-500"></i>' : ''}
+            </span>
+            <span class="text-[10px] opacity-80 mt-0.5">${scoreText}</span>
+            ${isScored ? '<span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-500"></span>' : ''}
+          </button>
+        `;
+      });
+    }
+
+    function loadClassToForm(cls) {
+      document.getElementById('currentClassTitle').innerText = cls;
+      
+      const data = scoresData[cls] || { content: 0, creativity: 0, completeness: 0, comments: '', isSaved: false };
+
+      document.getElementById('scoreContent').value = data.content || 0;
+      document.getElementById('sliderContent').value = data.content || 0;
+
+      document.getElementById('scoreCreativity').value = data.creativity || 0;
+      document.getElementById('sliderCreativity').value = data.creativity || 0;
+
+      document.getElementById('scoreCompleteness').value = data.completeness || 0;
+      document.getElementById('sliderCompleteness').value = data.completeness || 0;
+
+      document.getElementById('commentsInput').value = data.comments || '';
+
+      updatePhotoUI(data.photo || null);
+
+      const statusBadge = document.getElementById('currentClassStatus');
+      if (data.isSaved) {
+        statusBadge.innerText = '已評分';
+        statusBadge.className = 'text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200';
+      } else {
+        statusBadge.innerText = '未評分';
+        statusBadge.className = 'text-xs font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200';
+      }
+
+      calculateTotal();
+    }
+
+    function updateOverviewStats() {
+      let count = 0;
+      let sum = 0;
+      let maxScore = -1;
+      let topClass = '--';
+
+      CLASS_LIST.forEach(cls => {
+        const data = scoresData[cls];
+        if (data && data.isSaved) {
+          count++;
+          sum += data.total;
+          if (data.total > maxScore) {
+            maxScore = data.total;
+            topClass = `${cls} (${data.total}分)`;
+          }
+        }
+      });
+
+      const avg = count > 0 ? (sum / count).toFixed(1) : '0.0';
+      
+      document.getElementById('scoredCount').innerText = count;
+      document.getElementById('avgScoreDisplay').innerText = avg;
+      document.getElementById('topClassDisplay').innerText = topClass;
+    }
+
+    function appendComment(text) {
+      const input = document.getElementById('commentsInput');
+      if (input.value.trim() === '') {
+        input.value = text;
+      } else {
+        input.value += '；' + text;
+      }
+    }
+
+    function resetCurrentForm() {
+      setScore('content', 0);
+      setScore('creativity', 0);
+      setScore('completeness', 0);
+      document.getElementById('commentsInput').value = '';
+      if (scoresData[currentSelectedClass]) {
+        scoresData[currentSelectedClass].isSaved = false;
+      }
+      saveToLocalStorage();
+      renderClassGrid();
+      loadClassToForm(currentSelectedClass);
+      updateOverviewStats();
+      showToast(`已重設 ${currentSelectedClass} 班的評分資料`, 'warn');
+    }
+
+    function saveCurrentScore(silent = false) {
+      const c = parseInt(document.getElementById('scoreContent').value) || 0;
+      const cr = parseInt(document.getElementById('scoreCreativity').value) || 0;
+      const cm = parseInt(document.getElementById('scoreCompleteness').value) || 0;
+      const comments = document.getElementById('commentsInput').value.trim();
+      const total = c + cr + cm;
+      const existingPhoto = scoresData[currentSelectedClass] ? scoresData[currentSelectedClass].photo : null;
+
+      scoresData[currentSelectedClass] = {
+        className: currentSelectedClass,
+        content: c,
+        creativity: cr,
+        completeness: cm,
+        total: total,
+        comments: comments,
+        photo: existingPhoto,
+        judge: judgeName,
+        isSaved: true,
+        updatedAt: new Date().toLocaleString()
+      };
+
+      saveToLocalStorage();
+      renderClassGrid();
+      loadClassToForm(currentSelectedClass);
+      updateOverviewStats();
+
+      if (!silent) {
+        showToast(`${currentSelectedClass} 班分數已成功儲存！`);
+      }
+    }
+
+    async function saveAndSyncCurrentScore() {
+      saveCurrentScore(true);
+      const data = scoresData[currentSelectedClass];
+      if (!webAppUrl) {
+        openConfigModal();
+        showToast('請先填寫 Google Sheet Web App 網址以啟用雲端同步', 'warn');
+        return;
+      }
+
+      showToast(`正在傳送 ${currentSelectedClass} 班分數至 Google Sheet...`);
+      const success = await sendToGoogleSheet([data]);
+      if (success) {
+        showToast(`已成功同步 ${currentSelectedClass} 班資料至 Google Sheet！`);
+      } else {
+        showToast(`同步失敗，請檢查 Web App 網址或網絡連線`, 'warn');
+      }
+    }
+
+    async function syncAllToCloud() {
+      if (!webAppUrl) {
+        openConfigModal();
+        showToast('請先填寫 Google Sheet Web App 網址', 'warn');
+        return;
+      }
+
+      const itemsToSend = [];
+      CLASS_LIST.forEach(cls => {
+        if (scoresData[cls] && scoresData[cls].isSaved) {
+          itemsToSend.push(scoresData[cls]);
+        }
+      });
+
+      if (itemsToSend.length === 0) {
+        showToast('目前尚無已儲存的班別分數可供同步', 'warn');
+        return;
+      }
+
+      showToast(`正在將全部 ${itemsToSend.length} 班分數同步至 Google Sheet...`);
+      const success = await sendToGoogleSheet(itemsToSend);
+      if (success) {
+        showToast(`成功同步 ${itemsToSend.length} 班數據至 Google Sheet！`);
+      } else {
+        showToast(`同步失敗，請檢查 Apps Script 設定`, 'warn');
+      }
+    }
+
+    async function sendToGoogleSheet(dataArray) {
+      if (!webAppUrl) return false;
+      try {
+        const payload = JSON.stringify({
+          judge: judgeName,
+          scores: dataArray
+        });
+
+        await fetch(webAppUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: payload
+        });
+        return true;
+      } catch (err) {
+        console.error('Google Sheet Sync Error:', err);
+        return false;
+      }
+    }
+
+    function renderLeaderboard() {
+      const filterEl = document.getElementById('formFilter');
+      const filter = filterEl ? filterEl.value : 'ALL';
+      
+      let items = [];
+      CLASS_LIST.forEach(cls => {
+        if (filter !== 'ALL') {
+          const formNum = filter.replace('F', '');
+          if (!cls.startsWith(formNum)) return;
+        }
+
+        const data = scoresData[cls] || {
+          className: cls,
+          content: 0,
+          creativity: 0,
+          completeness: 0,
+          total: 0,
+          comments: '未評分',
+          judge: judgeName,
+          isSaved: false
+        };
+        items.push(data);
+      });
+
+      items.sort((a, b) => b.total - a.total);
+
+      // Render Podium Cards (Top 3)
+      const podium = document.getElementById('podiumCards');
+      if (podium) {
+        podium.innerHTML = '';
+
+        const top3 = items.slice(0, 3);
+        const podiumStyles = [
+          { title: '第一名 冠軍', bg: 'bg-amber-50 border-amber-300 text-amber-900', badge: 'gold-gradient text-white' },
+          { title: '第二名 亞軍', bg: 'bg-slate-50 border-slate-300 text-slate-800', badge: 'silver-gradient text-white' },
+          { title: '第三名 季軍', bg: 'bg-amber-900/5 border-amber-800/30 text-amber-900', badge: 'bronze-gradient text-white' }
+        ];
+
+        for (let i = 0; i < 3; i++) {
+          const item = top3[i];
+          const style = podiumStyles[i];
+
+          if (item && item.isSaved) {
+            const photoHtml = item.photo 
+              ? `<img src="${item.photo}" onclick="openImageModal('${item.photo}', '${item.className}')" class="w-12 h-12 rounded-lg object-cover border border-amber-200 cursor-pointer hover:scale-105 transition" title="點擊放大">`
+              : `<div class="w-12 h-12 rounded-lg bg-slate-200/60 flex items-center justify-center text-slate-400 text-xs"><i class="fa-solid fa-image"></i></div>`;
+
+            podium.innerHTML += `
+              <div class="light-card rounded-xl p-4 border ${style.bg} relative overflow-hidden flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-black px-2.5 py-0.5 rounded-full ${style.badge}">${style.title}</span>
+                    <span class="text-2xl font-black font-tech">${item.total} 分</span>
+                  </div>
+                  <div class="mt-3 flex items-center justify-between">
+                    <div>
+                      <h4 class="text-2xl font-black font-tech">${item.className} 班</h4>
+                      <p class="text-xs text-slate-500 mt-1 line-clamp-1">評語: ${item.comments || '無'}</p>
+                    </div>
+                    ${photoHtml}
+                  </div>
+                </div>
+              </div>
+            `;
+          } else {
+            podium.innerHTML += `
+              <div class="light-card rounded-xl p-4 border border-dashed border-slate-300 bg-slate-50/50 text-slate-400">
+                <span class="text-xs font-bold px-2 py-0.5 rounded bg-slate-200 text-slate-600">${style.title}</span>
+                <div class="mt-4 text-center text-xs">尚無評分結果</div>
+              </div>
+            `;
+          }
+        }
+      }
+
+      // Render Table Rows
+      const tbody = document.getElementById('leaderboardTableBody');
+      if (tbody) {
+        tbody.innerHTML = '';
+
+        items.forEach((item, index) => {
+          const rank = index + 1;
+          const rowBg = item.isSaved ? 'hover:bg-sky-50/50' : 'opacity-60 bg-slate-50/30';
+          const thumbHtml = item.photo
+            ? `<img src="${item.photo}" onclick="openImageModal('${item.photo}', '${item.className}')" class="w-8 h-8 rounded object-cover cursor-pointer hover:scale-110 transition border" title="點擊大圖">`
+            : `<span class="text-slate-300"><i class="fa-solid fa-image text-xs"></i></span>`;
+
+          tbody.innerHTML += `
+            <tr class="${rowBg} transition">
+              <td class="py-3 px-4 font-black font-tech text-slate-600">#${rank}</td>
+              <td class="py-3 px-4 font-bold font-tech text-slate-800 text-sm flex items-center gap-2">
+                ${thumbHtml}
+                <span>${item.className}</span>
+              </td>
+              <td class="py-3 px-4 text-xs text-slate-500">${item.judge || '--'}</td>
+              <td class="py-3 px-4 font-tech">${item.content}</td>
+              <td class="py-3 px-4 font-tech">${item.creativity}</td>
+              <td class="py-3 px-4 font-tech">${item.completeness}</td>
+              <td class="py-3 px-4 font-black font-tech text-sky-700 text-sm">${item.total}</td>
+              <td class="py-3 px-4 text-xs text-slate-600 max-w-xs truncate">${item.comments || '-'}</td>
+              <td class="py-3 px-4 text-center">
+                <button onclick="switchTab('scoring'); selectClass('${item.className}');" class="text-xs text-sky-600 hover:text-sky-800 font-bold">
+                  評分 / 修改
+                </button>
+              </td>
+            </tr>
+          `;
+        });
+      }
+    }
+
+    function copyTableTSV() {
+      let tsv = "班別\t評審員\t內容(40)\t創意(30)\t完整度(30)\t總分(100)\t評語\n";
+      CLASS_LIST.forEach(cls => {
+        const item = scoresData[cls] || { content:0, creativity:0, completeness:0, total:0, comments:'' };
+        tsv += `${cls}\t${judgeName}\t${item.content}\t${item.creativity}\t${item.completeness}\t${item.total}\t${item.comments}\n`;
+      });
+
+      const tempInput = document.createElement('textarea');
+      tempInput.value = tsv;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempInput);
+
+      showToast('已複製格式化表格！可直接在 Excel / Google Sheet 貼上');
+    }
+
+    function exportCSV() {
+      let csv = "\uFEFF班別,評審員,內容(40),創意(30),完整度(30),總分(100),評語\n";
+      CLASS_LIST.forEach(cls => {
+        const item = scoresData[cls] || { content:0, creativity:0, completeness:0, total:0, comments:'' };
+        csv += `"${cls}","${judgeName}",${item.content},${item.creativity},${item.completeness},${item.total},"${item.comments}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `Delia_Board_Decoration_Scores_${new Date().toISOString().slice(0,10)}.csv`;
+      link.click();
+    }
+
+    // Modal & Toast Helpers
+    function openConfigModal() {
+      document.getElementById('configModal').classList.remove('hidden');
+    }
+
+    function closeConfigModal() {
+      document.getElementById('configModal').classList.add('hidden');
+    }
+
+    function saveWebAppUrl() {
+      const url = document.getElementById('webAppUrlInput').value.trim();
+      webAppUrl = url;
+      localStorage.setItem('delia_webapp_url', webAppUrl);
+      updateSyncStatusIndicator();
+      closeConfigModal();
+      showToast('Google Sheet Web App 網址已儲存！');
+    }
+
+    function updateSyncStatusIndicator() {
+      const dot = document.getElementById('syncDot');
+      const text = document.getElementById('syncText');
+      const statusText = document.getElementById('cloudSyncStatusText');
+
+      if (webAppUrl) {
+        if (dot) dot.className = 'w-2 h-2 rounded-full bg-emerald-500';
+        if (text) text.innerText = '已連結 Google Sheet';
+        if (statusText) {
+          statusText.innerText = '已設定 Web App URL';
+          statusText.className = 'text-xs font-bold text-emerald-600 mt-1';
+        }
+      } else {
+        if (dot) dot.className = 'w-2 h-2 rounded-full bg-amber-500';
+        if (text) text.innerText = '未設定 Google Sheet';
+        if (statusText) {
+          statusText.innerText = '未連結 (可單機評分)';
+          statusText.className = 'text-xs font-bold text-amber-600 mt-1';
+        }
+      }
+    }
+
+    function copyAppsScriptCode() {
+      const code = document.getElementById('appsScriptCode').innerText;
+      const tempInput = document.createElement('textarea');
+      tempInput.value = code;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempInput);
+      showToast('Apps Script 程式碼已成功複製！');
+    }
+
+    function showToast(msg, type = 'success') {
+      const toast = document.getElementById('toast');
+      const msgEl = document.getElementById('toastMsg');
+      const iconEl = document.getElementById('toastIcon');
+
+      if (!toast || !msgEl || !iconEl) return;
+
+      msgEl.innerText = msg;
+      if (type === 'warn') {
+        iconEl.className = 'fa-solid fa-triangle-exclamation text-amber-400';
+      } else {
+        iconEl.className = 'fa-solid fa-circle-check text-emerald-400';
+      }
+
+      toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
